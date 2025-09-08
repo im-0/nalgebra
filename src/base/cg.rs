@@ -20,6 +20,7 @@ use crate::geometry::{
 };
 
 use simba::scalar::{ClosedAddAssign, ClosedMulAssign, RealField};
+use simba::simd::SimdRealField;
 
 /// # Translation and scaling in any dimension
 impl<T, D: DimName> OMatrix<T, D, D>
@@ -395,7 +396,7 @@ impl<T: Scalar + Zero + One + ClosedMulAssign + ClosedAddAssign, D: DimName, S: 
 }
 
 /// # Transformation of vectors and points
-impl<T: RealField, D: DimNameSub<U1>, S: Storage<T, D, D>> SquareMatrix<T, D, S>
+impl<T: SimdRealField, D: DimNameSub<U1>, S: Storage<T, D, D>> SquareMatrix<T, D, S>
 where
     DefaultAllocator: Allocator<D, D>
         + Allocator<DimNameDiff<D, U1>>
@@ -415,15 +416,12 @@ where
             self.generic_view((D::DIM - 1, 0), (Const::<1>, DimNameDiff::<D, U1>::name()));
         let n = normalizer.tr_dot(v);
 
-        if !n.is_zero() {
-            return transform * (v / n);
-        }
-
-        transform * v
+        let n = n.clone().select(n.simd_ne(T::zero()), T::one());
+        transform * (v / n)
     }
 }
 
-impl<T: RealField, S: Storage<T, Const<3>, Const<3>>> SquareMatrix<T, Const<3>, S> {
+impl<T: SimdRealField, S: Storage<T, Const<3>, Const<3>>> SquareMatrix<T, Const<3>, S> {
     /// Transforms the given point, assuming the matrix `self` uses homogeneous coordinates.
     #[inline]
     pub fn transform_point(&self, pt: &Point<T, 2>) -> Point<T, 2> {
@@ -432,15 +430,12 @@ impl<T: RealField, S: Storage<T, Const<3>, Const<3>>> SquareMatrix<T, Const<3>, 
         let normalizer = self.fixed_view::<1, 2>(2, 0);
         let n = normalizer.tr_dot(&pt.coords) + unsafe { self.get_unchecked((2, 2)).clone() };
 
-        if !n.is_zero() {
-            (transform * pt + translation) / n
-        } else {
-            transform * pt + translation
-        }
+        let n = n.clone().select(n.simd_ne(T::zero()), T::one());
+        (transform * pt + translation) / n
     }
 }
 
-impl<T: RealField, S: Storage<T, Const<4>, Const<4>>> SquareMatrix<T, Const<4>, S> {
+impl<T: SimdRealField, S: Storage<T, Const<4>, Const<4>>> SquareMatrix<T, Const<4>, S> {
     /// Transforms the given point, assuming the matrix `self` uses homogeneous coordinates.
     #[inline]
     pub fn transform_point(&self, pt: &Point<T, 3>) -> Point<T, 3> {
@@ -449,10 +444,7 @@ impl<T: RealField, S: Storage<T, Const<4>, Const<4>>> SquareMatrix<T, Const<4>, 
         let normalizer = self.fixed_view::<1, 3>(3, 0);
         let n = normalizer.tr_dot(&pt.coords) + unsafe { self.get_unchecked((3, 3)).clone() };
 
-        if !n.is_zero() {
-            (transform * pt + translation) / n
-        } else {
-            transform * pt + translation
-        }
+        let n = n.clone().select(n.simd_ne(T::zero()), T::one());
+        (transform * pt + translation) / n
     }
 }
