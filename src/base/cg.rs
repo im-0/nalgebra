@@ -403,6 +403,9 @@ where
         + Allocator<DimNameDiff<D, U1>, DimNameDiff<D, U1>>,
 {
     /// Transforms the given vector, assuming the matrix `self` uses homogeneous coordinates.
+    ///
+    /// Each component of the resulting vector is divided by the `w` component if it is not zero
+    /// or returned unchanged otherwise.
     #[inline]
     pub fn transform_vector(
         &self,
@@ -423,6 +426,9 @@ where
 
 impl<T: SimdRealField, S: Storage<T, Const<3>, Const<3>>> SquareMatrix<T, Const<3>, S> {
     /// Transforms the given point, assuming the matrix `self` uses homogeneous coordinates.
+    ///
+    /// Each component of the resulting point is divided by the `z` component if it is not zero
+    /// or returned unchanged otherwise.
     #[inline]
     pub fn transform_point(&self, pt: &Point<T, 2>) -> Point<T, 2> {
         let transform = self.fixed_view::<2, 2>(0, 0);
@@ -437,6 +443,9 @@ impl<T: SimdRealField, S: Storage<T, Const<3>, Const<3>>> SquareMatrix<T, Const<
 
 impl<T: SimdRealField, S: Storage<T, Const<4>, Const<4>>> SquareMatrix<T, Const<4>, S> {
     /// Transforms the given point, assuming the matrix `self` uses homogeneous coordinates.
+    ///
+    /// Each component of the resulting vector is divided by the `w` component if it is not zero
+    /// or returned unchanged otherwise.
     #[inline]
     pub fn transform_point(&self, pt: &Point<T, 3>) -> Point<T, 3> {
         let transform = self.fixed_view::<3, 3>(0, 0);
