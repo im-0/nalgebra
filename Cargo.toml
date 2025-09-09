@@ -184,3 +184,6 @@ codegen-units = 1
 all-features = true
 # define the configuration attribute `docsrs`
 rustdoc-args = ["--cfg", "docsrs"]
+
+[patch.crates-io]
+simba = { git = "https://github.com/im-0/simba", rev = "7403e3f64e78dffb89d57b369e6e1c250731ad16" }
