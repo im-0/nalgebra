@@ -108,7 +108,7 @@ num-traits = { version = "0.2", default-features = false }
 num-complex = { version = "0.4", default-features = false }
 num-rational = { version = "0.4", default-features = false }
 approx = { version = "0.5", default-features = false }
-simba = { version = "0.9", default-features = false }
+simba = { git = "https://github.com/im-0/simba", rev = "ee25c2e880af525bca5826fb558f0cdf76b9fd53", default-features = false }
 alga = { version = "0.9", default-features = false, optional = true }
 rand_distr = { version = "0.5", default-features = false, optional = true }
 matrixmultiply = { version = "0.3", optional = true }

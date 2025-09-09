@@ -32,7 +32,7 @@ intel-mkl = ["lapack-src/intel-mkl"]
 nalgebra = { version = "0.34", path = ".." }
 num-traits = "0.2"
 num-complex = { version = "0.4", default-features = false }
-simba = "0.9"
+simba = { git = "https://github.com/im-0/simba", rev = "ee25c2e880af525bca5826fb558f0cdf76b9fd53" }
 serde = { version = "1.0", features = ["derive"], optional = true }
 lapack = { version = "0.19", default-features = false }
 lapack-src = { version = "0.8", default-features = false }
@@ -44,4 +44,3 @@ proptest = { version = "1", default-features = false, features = ["std"] }
 quickcheck = "1"
 approx = "0.5"
 rand = "0.8"
-
